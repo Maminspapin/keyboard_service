@@ -47,8 +47,8 @@ public class KeyboardController {
         return keyboardRepository.findKeyboardByName(name).defaultIfEmpty(new Keyboard("no keyboard", 0, null));
     }
 
-    @PatchMapping("/{name}") // TODO так в БД не сохраняет результат
-    public void addButtons(@PathVariable String name, @RequestBody List<ButtonDTO> buttons) {
+    @PatchMapping("/{name}")
+    public Mono<Keyboard> addButtons(@PathVariable String name, @RequestBody List<ButtonDTO> buttons) {
 
         Mono<Keyboard> keyboard = keyboardRepository
                 .findKeyboardByName(name)
@@ -56,10 +56,14 @@ public class KeyboardController {
                     List<ButtonDTO> currentButtons = e.getButtons();
                     currentButtons.addAll(buttons);
                     e.setButtons(currentButtons);
-                    return e;
-                }).doOnNext(keyboardRepository::save);
 
-        keyboard.subscribe();
+                    return e;
+                })
+                .flatMap(keyboardRepository::save);
+
+        keyboard.subscribe(System.out::print);
+
+        return keyboard;
     }
 
     // removeButtons, update buttons, update

@@ -2,9 +2,9 @@ package com.luxoft.chatbot.keyboard.model.entity;
 
 import com.luxoft.chatbot.keyboard.model.dto.ButtonDTO;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 @Document(collection = "keyboard")
 public class Keyboard {
 
-    @MongoId
+    @Id
     private String id;
 
     @Field("name")
