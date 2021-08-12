@@ -37,7 +37,7 @@ public class KeyboardController {
         return keyboardRepository.findAll();
     }
 
-    @GetMapping("/{id}") // TODO неправильно, (формат id?)
+    @GetMapping("/{id}")
     public Mono<Keyboard> getKeyboardById(@PathVariable String id) {
         return keyboardRepository.findById(id).defaultIfEmpty(new Keyboard("no keyboard", 0, null));
     }
@@ -47,7 +47,7 @@ public class KeyboardController {
         return keyboardRepository.findKeyboardByName(name).defaultIfEmpty(new Keyboard("no keyboard", 0, null));
     }
 
-    @PatchMapping("/{name}")
+    @PatchMapping("/{name}") // TODO сделать корректный метод на апдейт
     public Mono<Keyboard> addButtons(@PathVariable String name, @RequestBody List<ButtonDTO> buttons) {
 
         Mono<Keyboard> keyboard = keyboardRepository
