@@ -4,7 +4,7 @@ import com.luxoft.chatbot.keyboard.dao.KeyboardRepository;
 import com.luxoft.chatbot.keyboard.model.dto.ButtonDTO;
 import com.luxoft.chatbot.keyboard.model.dto.KeyboardDTO;
 import com.luxoft.chatbot.keyboard.model.entity.Keyboard;
-import com.luxoft.chatbot.keyboard.utils.KeyboardMapper;
+import com.luxoft.chatbot.keyboard.util.KeyboardMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;

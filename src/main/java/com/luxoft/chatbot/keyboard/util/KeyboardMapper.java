@@ -1,4 +1,4 @@
-package com.luxoft.chatbot.keyboard.utils;
+package com.luxoft.chatbot.keyboard.util;
 
 import com.luxoft.chatbot.keyboard.model.dto.KeyboardDTO;
 import com.luxoft.chatbot.keyboard.model.entity.Keyboard;
