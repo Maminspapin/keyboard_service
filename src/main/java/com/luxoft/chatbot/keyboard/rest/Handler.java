@@ -5,13 +5,14 @@ import com.luxoft.chatbot.keyboard.model.dto.KeyboardDTO;
 import com.luxoft.chatbot.keyboard.model.entity.Keyboard;
 import com.luxoft.chatbot.keyboard.util.KeyboardMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 @Component
 public class Handler {
@@ -33,15 +34,21 @@ public class Handler {
     }
 
     public Mono<ServerResponse> createKeyboard(ServerRequest request) {
+        final UUID id = UUID.randomUUID();
         final Mono<KeyboardDTO> keyboardDTOMono = request.bodyToMono(KeyboardDTO.class);
         return ServerResponse
                 .ok()
                 .body(BodyInserters.fromPublisher(
-                        keyboardDTOMono.map(keyboardMapper::toEntity).flatMap(keyboardRepository::save), Keyboard.class));
+                        keyboardDTOMono.map(e -> {
+                            Keyboard keyboard = keyboardMapper.toEntity(e);
+                            keyboard.setId(id);
+
+                            return keyboard;
+                        }).flatMap(keyboardRepository::save), Keyboard.class));
     }
 
     public Mono<ServerResponse> getKeyboardById(ServerRequest request) {
-        final String id = request.pathVariable("id");
+        final UUID id = UUID.fromString(request.pathVariable("id"));
         final Mono<Keyboard> keyboardDTOMono = keyboardRepository.findById(id);
 
         return ServerResponse
