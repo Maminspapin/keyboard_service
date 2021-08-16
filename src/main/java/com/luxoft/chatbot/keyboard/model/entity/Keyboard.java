@@ -24,12 +24,12 @@ public class Keyboard {
     private int buttonsInARow;
 
     @Field("buttons")
-    private List<ButtonDTO> buttons;
+    private List<Button> buttons;
 
     @Field("created_at")
     private LocalDateTime createdAt;
 
-    public Keyboard(String name, int buttonsInARow, List<ButtonDTO> buttons) {
+    public Keyboard(String name, int buttonsInARow, List<Button> buttons) {
         this.name = name;
         this.buttonsInARow = buttonsInARow;
         this.buttons = buttons;
