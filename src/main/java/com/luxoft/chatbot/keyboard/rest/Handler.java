@@ -20,10 +20,10 @@ public class Handler {
     private final KeyboardRepository keyboardRepository;
     private final KeyboardMapper keyboardMapper;
 
-    @Autowired
-    public Handler(KeyboardRepository keyboardRepository) {
+    public Handler(@Autowired KeyboardRepository keyboardRepository,
+                   @Autowired KeyboardMapper keyboardMapper) {
         this.keyboardRepository = keyboardRepository;
-        this.keyboardMapper = KeyboardMapper.INSTANCE;
+        this.keyboardMapper = keyboardMapper;
     }
 
     public Mono<ServerResponse> getAllKeyboards(ServerRequest request) {
