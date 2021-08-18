@@ -1,7 +1,5 @@
 package com.luxoft.chatbot.keyboard.rest;
 
-import com.luxoft.chatbot.keyboard.dao.KeyboardRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -22,12 +20,16 @@ public class Router {
         RequestPredicate createKeyboard = POST("/api/keyboard/new").and(accept(MediaType.APPLICATION_JSON));
         RequestPredicate getKeyboardById = GET("/api/keyboard/{id}").and(accept(MediaType.APPLICATION_JSON));
         RequestPredicate getKeyboardByName = GET("/api/keyboard/").and(accept(MediaType.APPLICATION_JSON));
+        RequestPredicate patchKeyboard = PATCH("/api/keyboard/{id}").and(accept(MediaType.APPLICATION_JSON));
+        RequestPredicate deleteKeyboardById = DELETE("/api/keyboard/{id}").and(accept(MediaType.APPLICATION_JSON));
 
 
         return RouterFunctions
                 .route(getAllKeyboards, handler::getAllKeyboards)
                 .andRoute(createKeyboard, handler::createKeyboard)
                 .andRoute(getKeyboardById, handler::getKeyboardById)
-                .andRoute(getKeyboardByName, handler::getKeyboardByName);
+                .andRoute(getKeyboardByName, handler::getKeyboardByName)
+                .andRoute(patchKeyboard, handler::patchKeyboard)
+                .andRoute(deleteKeyboardById, handler::deleteKeyboardById);
     }
 }
