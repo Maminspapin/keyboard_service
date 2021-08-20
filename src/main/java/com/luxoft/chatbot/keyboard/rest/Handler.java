@@ -3,12 +3,17 @@ package com.luxoft.chatbot.keyboard.rest;
 import com.luxoft.chatbot.keyboard.dao.KeyboardRepository;
 import com.luxoft.chatbot.keyboard.model.dto.KeyboardDTO;
 import com.luxoft.chatbot.keyboard.model.entity.Keyboard;
+import com.luxoft.chatbot.keyboard.util.KeyboardValidator;
 import com.luxoft.chatbot.keyboard.util.KeyboardMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
@@ -20,11 +25,14 @@ public class Handler {
 
     private final KeyboardRepository keyboardRepository;
     private final KeyboardMapper keyboardMapper;
+    private final KeyboardValidator validator;
 
     public Handler(@Autowired KeyboardRepository keyboardRepository,
-                   @Autowired KeyboardMapper keyboardMapper) {
+                   @Autowired KeyboardMapper keyboardMapper,
+                   @Autowired KeyboardValidator validator) {
         this.keyboardRepository = keyboardRepository;
         this.keyboardMapper = keyboardMapper;
+        this.validator = validator;
     }
 
     public Mono<ServerResponse> getAllKeyboards(ServerRequest request) {
@@ -38,14 +46,32 @@ public class Handler {
         final UUID id = UUID.randomUUID();
         final Mono<KeyboardDTO> keyboardDTOMono = request.bodyToMono(KeyboardDTO.class);
 
-        return ServerResponse.ok()
-                .body(BodyInserters.fromPublisher(
-                        keyboardDTOMono.map(e -> {
-                            Keyboard keyboard = keyboardMapper.toEntity(e);
-                            keyboard.setId(id);
+        Mono<Keyboard> responseBody = keyboardDTOMono
+                .map(body -> {
+                    Errors errors = new BeanPropertyBindingResult(
+                            body,
+                            KeyboardDTO.class.getName());
+                    validator.validate(body, errors);
 
-                            return keyboard;
-                        }).flatMap(keyboardRepository::save), Keyboard.class));
+                    if (errors.getAllErrors().isEmpty()) {
+                        Keyboard keyboard = keyboardMapper.toEntity(body);
+                        keyboard.setId(id);
+
+                        return keyboard;
+                    } else {
+                        throw new ResponseStatusException(
+                                HttpStatus.BAD_REQUEST,
+                                errors.getAllErrors().toString());
+                    }
+                })
+                .flatMap(e -> {
+                    keyboardRepository.save(e);
+                    System.out.println(e.toString());
+                    return Mono.just(e);
+                });
+
+        return ServerResponse.ok()
+                .body(responseBody, Keyboard.class);
     }
 
     public Mono<ServerResponse> getKeyboardById(ServerRequest request) {
