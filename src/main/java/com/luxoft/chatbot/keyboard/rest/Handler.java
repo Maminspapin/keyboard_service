@@ -64,11 +64,7 @@ public class Handler {
                                 errors.getAllErrors().toString());
                     }
                 })
-                .flatMap(e -> {
-                    keyboardRepository.save(e);
-                    System.out.println(e.toString());
-                    return Mono.just(e);
-                });
+                .flatMap(keyboardRepository::save);
 
         return ServerResponse.ok()
                 .body(responseBody, Keyboard.class);
